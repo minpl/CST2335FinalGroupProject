@@ -1,5 +1,6 @@
 package com.example.joe.cst2335finalgroupproject;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.ContentValues;
@@ -11,6 +12,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -36,123 +38,82 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Locale;
 
 /**
- * Milestone 1 (Must be demonstrated December 7th):
- * X 3.	Each Activity must have a ListView to present items. Selecting an item from the ListView must show detailed information about the item selected.
- * X 7.	Each activity must have at least 1 button
- * X 8.	Each activity must have at least 1 edit text with appropriate text input method.
+ * Main Activity for Thermostat Rule Management Activity
  *
- * Milestone 2 (Must be demonstrated December 14th):
- * X 2.	Each Activity must use a fragment in its graphical interface.
- * X 5.	Each activity must use an AsyncTask in the code. This can be to open a Database, retrieve data from a server, save data, or any other reasonable circumstance.
- * X 6.	Each activity must have at least 1 progress bar
- * X 9.	Each activity must have at least 1 Toast, Snackbar, and custom dialog notification.
- *
- * Milestone 3 (Must be demonstrated December 21st):
- * X 1.  The software must have 1 different activity written by each person in your group. The activity must be accessible by selecting a graphical icon from a Toolbar.
- * X 4.  The items listed in the ListView must be stored by the application so that appear the next time the application is launched. The user must be able to add and delete items, which would then also be stored.
- * X 10.	A help menu item that displays a dialog with the author’s name, Activity version number, and instructions for how to use the interface.
- * X 11.	There must be at least 1 other language supported by your Activity. If you are not bilingual, then you must support both British and American English (words like colour, color, neighbour, neighbor, etc).
- * If you know a language other than English, then you can support that language in your application and don’t need to support American English.
- *
- * Activity Specific Requirements:
- * •	Include an instruction window that the user can access from a menu on the navigation bar.
- * •	Users should be able to set a schedule for a thermostat. The user should be able to set rules for the temperature based on which day and time to set the temperature.  For example:
- * o	Monday 6:00 Temp -> 20
- * o	Monday 9:00 Temp -> 16
- * o	Wednesday 16:00 Temp -> 20
- * o	Wednesday 22:00 Temp -> 18
- * •	This should be displayed in a ListView. Clicking on an item from the list should show the details of the temperature rule, and let the user edit the rule and save it.
- * The user should also be allowed to edit the rule, and “save as new rule” instead of changing the selected rule. For example, clicking on “Monday 6:00 Temp -> 20” will show the day, time, and temperature.
- * If the user changes the day to Tuesday and clicks “save”, the rule will now apply to Tuesday instead of Monday. If the user changes the day to Tuesday and clicks “Save as new rule”,
- * a new rule “Tuesday 6:00 Temp -> 20” will be added, and the original “Monday 6:00 Temp -> 20” will still be in the list.
+ * Author: Joe Ireland - 040 767 052
  */
-
 public class t_ThermostatProgramActivity extends AppCompatActivity {
 
-    public static final int DISCARD_RESULT = 10;
+    //define static FragmentActivity Request Codes
+    public static final int ADD_REQUEST_CODE = 10;
+    public static final int EDIT_REQUEST_CODE = 20;
 
-    public static final int SAVE_AS_NEW_RESULT = 20;
-    public static final int SAVE_RESULT = 21;
-
-    public static final int ADD_METHOD_CODE = 30;
-    public static final int EDIT_METHOD_CODE = 31;
+    //define static FragmentActivity Result Codes
+    public static final int SAVE_AS_NEW_RESULT_CODE = 30;
+    public static final int SAVE_RESULT_CODE = 40;
+    public static final int DISCARD_RESULT_CODE = 50;
 
     //local ArrayList to handle the rules_list being read from the database and displayed on screen
     final ArrayList<String> rules_list = new ArrayList<>();
-    final ArrayList<RelativeLayout> button_list = new ArrayList<>();
 
     //database references
     m_GlobalDatabaseHelper tdh;
     SQLiteDatabase db;
     Cursor c;
 
-    //create handles to asyncTask object (database read)
+    //create handle to asyncTask object (database read)
     asyncRead aRead;
 
     //create handles to the objects on the screen
     ListView lv;
     Button addButton;
-    Button editButton;
     TextView progressBarTextView;
     ProgressBar progressBar;
     RuleAdapter rulesAdapter;
 
-    boolean isTabletOrLandscape;
+    //boolean that reflects if the frame layout is loaded in THIS view - ie, a landscape orientation.
+    boolean frameLayoutLoaded;
 
-    ViewHolder vh = new ViewHolder();
-    //https://stackoverflow.com/questions/43429998/how-to-sort-strings-containing-day-of-week-names-in-ascending-order
-    Comparator<String> dayOfWeekComparator = new Comparator<String>() {
-        @Override
-        public int compare(String s1, String s2) {
-            try {
-                SimpleDateFormat format = new SimpleDateFormat("EEE");
-                Date d1 = format.parse(s1);
-                Date d2 = format.parse(s2);
-                if (d1.equals(d2)) {
-                    return 0;
-                    //s1.substring(s1.indexOf(" ") + 1).compareTo(s2.substring(s2.indexOf(" ") + 1))
-                } else {
-                    Calendar cal1 = Calendar.getInstance();
-                    Calendar cal2 = Calendar.getInstance();
-                    cal1.setTime(d1);
-                    cal2.setTime(d2);
-                    return cal1.get(Calendar.DAY_OF_WEEK) - cal2.get(Calendar.DAY_OF_WEEK);
-                }
-            } catch (ParseException pe) {
-                throw new RuntimeException(pe);
-            }
-        }
-    };
+    //a handle to the currently loaded fragment
     private Fragment loadedFragment;
 
+    /**
+     * Connects the instance variable handles to the loaded View objects, and defines
+     * button behaviors.
+     *
+     * @param savedInstanceState The previously loaded state of the application.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.t_activity_program_thermostat);
 
+        //define insstance handles
         lv = findViewById(R.id.rulesView);
 
         tdh = new m_GlobalDatabaseHelper(this);
         db = tdh.getWritableDatabase();
 
-        aRead = new asyncRead();
-
         progressBarTextView = findViewById(R.id.t_currentTaskTextView);
         progressBar = findViewById(R.id.progressBar);
         addButton = findViewById(R.id.addButton);
-        editButton = findViewById(R.id.editButton);
 
+        //set up toolbar
         Toolbar t_Toolbar = findViewById(R.id.t_toolbar);
         setSupportActionBar(t_Toolbar);
+        getSupportActionBar().setTitle("Thermostat Programmer");
 
+        //read the
+        aRead = new asyncRead();
         aRead.execute();
 
         rulesAdapter = new RuleAdapter(this);
         lv.setAdapter(rulesAdapter);
 
-        isTabletOrLandscape = findViewById(R.id.t_frameLayout) != null;
+        frameLayoutLoaded = findViewById(R.id.t_frameLayout) != null;
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -164,7 +125,7 @@ public class t_ThermostatProgramActivity extends AppCompatActivity {
                 info.putInt("listPosition", position);
                 info.putLong("databaseID", id);
 
-                if (isTabletOrLandscape) {
+                if (frameLayoutLoaded) {
                     t_editRuleFragment editFragment = new t_editRuleFragment();
                     editFragment.setArguments(info);
                     loadedFragment = editFragment;
@@ -174,7 +135,7 @@ public class t_ThermostatProgramActivity extends AppCompatActivity {
                 } else {
                     Intent detailsIntent = new Intent(t_ThermostatProgramActivity.this, t_DetailView.class);
                     detailsIntent.putExtras(info);
-                    startActivityForResult(detailsIntent, EDIT_METHOD_CODE);
+                    startActivityForResult(detailsIntent, EDIT_REQUEST_CODE);
                 }
             }
         });
@@ -188,7 +149,7 @@ public class t_ThermostatProgramActivity extends AppCompatActivity {
                 info.putString("rule", "");
                 info.putInt("listPosition", 0);
 
-                if (isTabletOrLandscape) {
+                if (frameLayoutLoaded) {
                     t_addRuleFragment addFragment = new t_addRuleFragment();
                     addFragment.setArguments(info);
                     loadedFragment = addFragment;
@@ -198,18 +159,29 @@ public class t_ThermostatProgramActivity extends AppCompatActivity {
                 } else {
                     Intent detailsIntent = new Intent(t_ThermostatProgramActivity.this, t_DetailView.class);
                     detailsIntent.putExtras(info);
-                    startActivityForResult(detailsIntent, ADD_METHOD_CODE);
+                    startActivityForResult(detailsIntent, ADD_REQUEST_CODE);
                 }
             }
         });
     }
 
+    /**
+     * Inflates the Toolbar entries.
+     *
+     * @param menu The menu reference to be inflated into.
+     * @return Boolean representation of successful inflation.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.t_menu, menu);
         return true;
     }
 
+    /**
+     * Handles interactions with Menu entries.
+     * @param menuItem The menu entry that has been clicked on.
+     * @return Boolean representation of successful method call.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
 
@@ -233,12 +205,11 @@ public class t_ThermostatProgramActivity extends AppCompatActivity {
 
             case R.id.menu_help:
                 LayoutInflater inflater = getLayoutInflater();
-                LinearLayout rootView
-                        = (LinearLayout) inflater.inflate(R.layout.t_custom_alert_dialog, null);
+                LinearLayout rootView = (LinearLayout) inflater.inflate(R.layout.t_custom_alert_dialog, null);
 
-                TextView tvAlertMsg = rootView.findViewById(R.id.tvCarAlertMsg);
-                tvAlertMsg.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
-                tvAlertMsg.setText(getResources().getText(R.string.t_helpMenuText));
+                TextView helpMenuTextView = rootView.findViewById(R.id.t_helpMenuTextView);
+                helpMenuTextView.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+                helpMenuTextView.setText(getResources().getText(R.string.t_helpMenuText));
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(t_ThermostatProgramActivity.this);
                 builder.setView(rootView);
@@ -246,7 +217,7 @@ public class t_ThermostatProgramActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-
+                                dialogInterface.dismiss();
                             }
                         }
                 );
@@ -258,6 +229,9 @@ public class t_ThermostatProgramActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Closes Database and Database Cursor when the Activity is shut down.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -265,29 +239,41 @@ public class t_ThermostatProgramActivity extends AppCompatActivity {
         db.close();
     }
 
+    /**
+     * Handles updates to the Configuration (set to be changes to orientation) to redraw the
+     * application when the user rotates the screen.
+     * @param newConfig The Configuration that has been changed.
+     */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         startActivity(new Intent(this, t_ThermostatProgramActivity.class));
+
+        //update & sort the entire list
+        sortList();
+        rulesAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Dispatches calls to methods to save/add/discard the results of the FragmentActivity that was launched.
+     * @param requestCode The Initial Code used to launch the Activity.
+     * @param resultCode The Result Code that the Activity set itself to finish with.
+     * @param data The Intent containing the Bundle containing the rule to be saved/added.
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //this is where t_DetailView Activites land when they are finished.
 
-        if (resultCode != t_ThermostatProgramActivity.DISCARD_RESULT && data != null) {
+        if (resultCode != t_ThermostatProgramActivity.DISCARD_RESULT_CODE && data != null) {
 
             Bundle resultBundle = data.getExtras();
 
-            if (requestCode == ADD_METHOD_CODE) {
-                if (resultCode == SAVE_RESULT) {
-                    add_SaveRule(resultBundle);
-                }
-            } else if (requestCode == EDIT_METHOD_CODE) {
-                if (resultCode == SAVE_AS_NEW_RESULT) {
-                    edit_SaveAsNew(resultBundle);
-                } else if (resultCode == SAVE_RESULT) {
-                    edit_SaveChanges(resultBundle);
+            if (requestCode == ADD_REQUEST_CODE && resultCode == SAVE_RESULT_CODE) {
+                saveRuleAsNew(resultBundle);
+            } else if (requestCode == EDIT_REQUEST_CODE) {
+                if (resultCode == SAVE_AS_NEW_RESULT_CODE) {
+                    saveRuleAsNew(resultBundle);
+                } else if (resultCode == SAVE_RESULT_CODE) {
+                    saveRuleOverwrite(resultBundle);
                 }
             }
         } else {
@@ -295,112 +281,184 @@ public class t_ThermostatProgramActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Displays a Snackbar notification that the rule modification has been discarded.
+     */
     void discardMethod() {
         Snackbar.make(findViewById(R.id.t_toolbar),
                 "Rule Discarded",
                 Snackbar.LENGTH_SHORT).show();
     }
 
-    void add_SaveRule(Bundle resultBundle) {
+    /**
+     * Saves a Rule contained in resultBundle to the ArrayList and Database in the position
+     * previously occupied by the rule that was changed.
+     *
+     * @param resultBundle The intent bundle resulting from the Add/Edit fragment.
+     */
+    void saveRuleOverwrite(Bundle resultBundle) {
 
-        String rule = resultBundle.getString("ruleToAdd");
-
-        rules_list.add(rule);
-        ContentValues newRule = new ContentValues();
-        newRule.put(m_GlobalDatabaseHelper.RULE_COL_NAME, rule);
-
-        db.insert(m_GlobalDatabaseHelper.THERMOSTAT_TABLE_NAME, null, newRule);
-
-        updateList();
-    }
-
-    void edit_SaveChanges(Bundle resultBundle) {
-
+        //delete the old rule
         deleteRule(resultBundle.getLong("deleteID"), resultBundle.getInt("deletePosition"));
 
-        ContentValues newRule = new ContentValues();
-        newRule.put(m_GlobalDatabaseHelper.RULE_COL_NAME, resultBundle.getString("ruleToAdd"));
-        db.insert(m_GlobalDatabaseHelper.THERMOSTAT_TABLE_NAME, null, newRule);
+        //grab the new rule out of the resultBundle
+        String rule = resultBundle.getString("ruleToAdd");
 
-        updateList();
+        //add new rule to the list
+        rules_list.add(rule);
+
+        //add new rule to the database
+        ContentValues newRule = new ContentValues();
+        newRule.put(m_GlobalDatabaseHelper.T_RULE_COL_NAME, rule);
+        db.insert(m_GlobalDatabaseHelper.T_TABLE_NAME, null, newRule);
+
+        //update & sort the entire list
+        sortList();
+        rulesAdapter.notifyDataSetChanged();
     }
 
-    void edit_SaveAsNew(Bundle resultBundle) {
+    /**
+     * Adds a Rule contained in resultBundle to the ArrayList and Database as a new Rule.
+     *
+     * @param resultBundle The intent bundle resulting from the Add/Edit fragment.
+     */
+    void saveRuleAsNew(Bundle resultBundle) {
 
         String rule = resultBundle.getString("ruleToAdd");
+
         rules_list.add(rule);
         ContentValues newRule = new ContentValues();
-        newRule.put(m_GlobalDatabaseHelper.RULE_COL_NAME, rule);
+        newRule.put(m_GlobalDatabaseHelper.T_RULE_COL_NAME, rule);
 
-        db.insert(m_GlobalDatabaseHelper.THERMOSTAT_TABLE_NAME, null, newRule);
+        db.insert(m_GlobalDatabaseHelper.T_TABLE_NAME, null, newRule);
 
-        updateList();
+        //update & sort the entire list
+        sortList();
+        rulesAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Deletes the Rule at ArrayList Position position and with Database ID... id.
+     * @param id The Database ID (shocker)
+     * @param position The ArrayList Position.
+     */
     private void deleteRule(long id, int position) {
 
-        //remove fragment (edit / add details) if it exsits
+        //remove fragment (edit / add details) if it exists
+        //to prevent conflicts
         if (loadedFragment != null) {
             getFragmentManager().beginTransaction().remove(loadedFragment).commit();
         }
 
+        //remove the arraylist entry
         rules_list.remove(position);
-        db.delete(m_GlobalDatabaseHelper.THERMOSTAT_TABLE_NAME,
-                m_GlobalDatabaseHelper.RULE_ID + " = ? ",
-                new String[]{String.valueOf(id)});
-        rulesAdapter.notifyDataSetChanged();
 
+        //remove the database entry
+        db.delete(m_GlobalDatabaseHelper.T_TABLE_NAME,
+                m_GlobalDatabaseHelper.T_RULE_ID + " = ? ",
+                new String[]{String.valueOf(id)});
+
+        //notify the List Adapter and the User of the removal.
+        rulesAdapter.notifyDataSetChanged();    //do NOT need to sort in the case of a deletion
         Snackbar.make(findViewById(R.id.t_toolbar),
                 "Rule Deleted",
                 Snackbar.LENGTH_SHORT).show();
     }
 
-    private void updateList() {
+    /**
+     * Defines a Collection Sort method, then applies the sort to the ArrayList.
+     * <p>
+     * Called after an insertion/edit/removal.
+     */
+    private void sortList() {
+
+        //https://stackoverflow.com/questions/43429998/how-to-sort-strings-containing-day-of-week-names-in-ascending-order
+        Comparator<String> dayOfWeekComparator = new Comparator<String>() {
+            @Override
+            public int compare(String s1, String s2) {
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("EEE", Locale.CANADA);
+                    Date d1 = format.parse(s1);
+                    Date d2 = format.parse(s2);
+                    if (d1.equals(d2)) {
+                        return 0;
+                    } else {
+                        Calendar cal1 = Calendar.getInstance();
+                        Calendar cal2 = Calendar.getInstance();
+                        cal1.setTime(d1);
+                        cal2.setTime(d2);
+                        return cal1.get(Calendar.DAY_OF_WEEK) - cal2.get(Calendar.DAY_OF_WEEK);
+                    }
+                } catch (ParseException pe) {
+                    throw new RuntimeException(pe);
+                }
+            }
+        };
+
         Collections.sort(rules_list, dayOfWeekComparator);
-        rulesAdapter.notifyDataSetChanged();
     }
 
-    static class ViewHolder {
-        TextView ruleView;
-        RelativeLayout selected;
-    }
-
-    //https://stackoverflow.com/questions/20945528/android-hide-and-show-checkboxes-in-custome-listview-on-button-click
+    /**
+     * Defines a custom ArrayAdapter to populate the ListView.
+     */
     class RuleAdapter extends ArrayAdapter<String> {
 
         RuleAdapter(Context ctx) {
             super(ctx, 0);
         }
 
+        /**
+         * Returns the Database ID of the element ar ArrayList[Position]
+         * @param position The position of the ArrayList entry in question.
+         * @return THE DATABASE ID GOD I JUST TOLD YOU.
+         */
         @Override
         public long getItemId(int position) {
-            c = db.rawQuery(m_GlobalDatabaseHelper.THERMOSTAT_SELECT_ALL_SQL, null);
+            c = db.rawQuery(m_GlobalDatabaseHelper.T_SELECT_ALL_SQL, null);
             c.moveToPosition(position);
-            return c.getLong(c.getColumnIndex(m_GlobalDatabaseHelper.RULE_ID));
+            return c.getLong(c.getColumnIndex(m_GlobalDatabaseHelper.T_RULE_ID));
         }
 
+        /**
+         * Returns the number of elements in the ArrayList.
+         * @return the number of elements in the ArrayList.
+         */
         public int getCount() {
             return rules_list.size();
         }
 
+        /**
+         * Returns the Rule at the parameter position in the ArrayList.
+         * @param position The position in question.
+         * @return The Rule.
+         */
         public String getItem(int position) {
             return rules_list.get(position);
         }
 
+        /**
+         * Inflates each row into the ListView on screen.
+         * @param position The Position being inflated.
+         * @param recycled The incoming View to be inflated.  May be recycled.
+         * @param parent The ViewGroup, i.e., the ArrayAdapter/ListView.
+         * @return The inflated view.
+         */
+        @NonNull
         @Override
-        public View getView(final int position, View recycled, ViewGroup parent) {
+        public View getView(final int position, View recycled, @NonNull ViewGroup parent) {
 
-            LayoutInflater inflater = getLayoutInflater();
-            View layout;
+            View view = recycled;
 
-            layout = inflater.inflate(R.layout.t_rule_row, null);
+            if (view == null) {
+                LayoutInflater inflater = t_ThermostatProgramActivity.this.getLayoutInflater();
+                view = inflater.inflate(R.layout.t_rule_row, parent, false);
+            }
 
-            vh.ruleView = layout.findViewById(R.id.ruleTextView);
-            vh.ruleView.setText(getItem(position));
+            TextView ruleView = view.findViewById(R.id.ruleTextView);
+            ruleView.setText(getItem(position));
 
-            vh.selected = layout.findViewById(R.id.t_deleteRuleRowButton);
-
-            vh.selected.setOnClickListener(new View.OnClickListener() {
+            RelativeLayout selected = view.findViewById(R.id.t_deleteRuleRowButton);
+            selected.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     long id = rulesAdapter.getItemId(position);
@@ -408,32 +466,29 @@ public class t_ThermostatProgramActivity extends AppCompatActivity {
                 }
             });
 
-            layout.setTag(vh);
-
-            return layout;
+            return view;
         }
     }
 
+    /**
+     * Defines a custom AsyncTask to handle Database Reads.
+     */
     private class asyncRead extends AsyncTask<String, Integer, String> {
 
+        /**
+         * @param args Not used.
+         * @return A confirmation message of a successful read sent to onPostExecute().
+         */
+        @SuppressLint("SetTextI18n")
         @Override
         protected String doInBackground(String... args) {
 
             progressBarTextView.setText("Reading Database:");
             progressBar.setVisibility(View.VISIBLE);
 
-            c = db.query(false, m_GlobalDatabaseHelper.THERMOSTAT_TABLE_NAME, new String[]{m_GlobalDatabaseHelper.RULE_COL_NAME}, null, null, null, null, null, null);
-            c.moveToFirst();
-            while (!c.isAfterLast()) {
-                String rule_text = c.getString(c.getColumnIndex(m_GlobalDatabaseHelper.RULE_COL_NAME));
-                //Log.i("db contained", rule);
-                rules_list.add(rule_text);
-                c.moveToNext();
-            }
-
-
-            for (int i = 0; i < 100; i++) {
-                publishProgress(i);
+            //sends fake progress percentage data to the progress bar update method.
+            for (int i = 0; i < 50; i++) {
+                publishProgress(i*2);
                 try {
                     Thread.sleep(30);
                 } catch (InterruptedException e) {
@@ -441,15 +496,36 @@ public class t_ThermostatProgramActivity extends AppCompatActivity {
                 }
             }
 
+            //Reads the database into the ArrayList
+            c = db.rawQuery(m_GlobalDatabaseHelper.T_SELECT_ALL_SQL, null);
+            c.moveToFirst();
+            while (!c.isAfterLast()) {
+                String rule_text = c.getString(c.getColumnIndex(m_GlobalDatabaseHelper.T_RULE_COL_NAME));
+                rules_list.add(rule_text);
+                c.moveToNext();
+            }
+
+            //update & sort the entire list
+            sortList();
+
             return "Database Read Complete!";
         }
 
+        /**
+         * Sends progress values to the ProgressBar.
+         * @param values the percentage progress the database read is currently at.
+         */
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
             progressBar.setProgress(values[0]);
         }
 
+        /**
+         * Finishes the database read by clearing the progress bar and progress bar label, and
+         * notifies the user via a toast.
+         * @param result A Message that the Database Read completed.
+         */
         @Override
         protected void onPostExecute(String result) {
             progressBarTextView.setText("");

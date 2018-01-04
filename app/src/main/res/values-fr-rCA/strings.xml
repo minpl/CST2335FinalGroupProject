@@ -15,4 +15,5 @@
     <string name="a_alert_title">Statistiques</string>
     <string name="a_help_title">Aide a l\'activité</string>
     <string name="a_ok">OK</string>
+    <string name="thermostatIcon">thermostatIcon</string>
 </resources>

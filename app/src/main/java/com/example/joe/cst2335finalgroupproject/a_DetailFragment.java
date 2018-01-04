@@ -21,9 +21,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Owner on 12/14/2017.
+ * Author: Nick Crawford
  */
-
 public class a_DetailFragment extends Fragment {
     View v;
     Activity parent;
@@ -36,6 +35,12 @@ public class a_DetailFragment extends Fragment {
     Bundle passedInfo;
     int pos;
     Spinner typeSpinner;
+
+    /**
+     * function to be run when fragment attaches. Loads values from tbe bundle passed into the fragment into class variables
+     *
+     * @param activity the activity that called this fragment
+     */
     public void onAttach(Activity activity){
         super.onAttach(activity);
         passedInfo = getArguments();
@@ -53,19 +58,26 @@ public class a_DetailFragment extends Fragment {
         parent=activity;
     }
 
+    /**
+     * on creation of fragment, assign function to the confirm, delete and cancel buttons
+     * @param inflater inflater to inflate layout
+     * @param container View group
+     * @param savedInstanceState
+     * @return
+     */
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        v = inflater.inflate(R.layout.a_detail_fragment,null);
-        Button deleteButton = (Button) v.findViewById(R.id.a_detailDeleteButton);
-        Button confirmButton = (Button)v.findViewById(R.id.a_detailConfirmButton);
-        Button cancelButton = (Button) v.findViewById(R.id.a_detailCancelButton);
+        v = inflater.inflate(R.layout.a_detail_fragment, null);
+        Button deleteButton = v.findViewById(R.id.a_detailDeleteButton);
+        Button confirmButton = v.findViewById(R.id.a_detailConfirmButton);
+        Button cancelButton = v.findViewById(R.id.a_detailCancelButton);
 
         initializeTypeSpinner();
-       // final EditText typeEdit = (EditText)v.findViewById(R.id.a_detailTypeText);
-        final EditText durationEdit = (EditText)v.findViewById(R.id.a_detailDurationText);
-        final EditText commentEdit = (EditText)v.findViewById(R.id.a_detailCommentText);
-        TextView dateText =(TextView)v.findViewById(R.id.a_detailTimeText);
+        // final EditText typeEdit = (EditText)v.findViewById(R.id.a_detailTypeText);
+        final EditText durationEdit = v.findViewById(R.id.a_detailDurationText);
+        final EditText commentEdit = v.findViewById(R.id.a_detailCommentText);
+        TextView dateText = v.findViewById(R.id.a_detailTimeText);
 
-       // typeEdit.setText(activityType);
+        // typeEdit.setText(activityType);
         durationEdit.setText(String.valueOf(duration));
         commentEdit.setText(comment);
         dateText.setText(a_ActivityTrackerActivity.ddmmyy.format(date));
@@ -73,49 +85,49 @@ public class a_DetailFragment extends Fragment {
         switch (parent.getLocalClassName()) {
             case "a_DetailView":
                 Log.i("detail_FRAGMENT","IMA PHOWN");
-            deleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.i("a_DetailFragment", "Clicked Delete");
-                    Intent deleteIntent = new Intent();
-                    Bundle deleteBundle = new Bundle();
-                    deleteBundle.putLong("deleteID", colID);
-                    deleteBundle.putInt("deletePos", pos);
-                    deleteIntent.putExtras(deleteBundle);
-                    getActivity().setResult(10, deleteIntent);
-                    getActivity().finish();
-                }
-            });
+                deleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.i("a_DetailFragment", "Clicked Delete");
+                        Intent deleteIntent = new Intent();
+                        Bundle deleteBundle = new Bundle();
+                        deleteBundle.putLong("deleteID", colID);
+                        deleteBundle.putInt("deletePos", pos);
+                        deleteIntent.putExtras(deleteBundle);
+                        getActivity().setResult(10, deleteIntent);
+                        getActivity().finish();
+                    }
+                });
 
-            confirmButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.i("a_DetailFragment", "Clicked Confirm");
+                confirmButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.i("a_DetailFragment", "Clicked Confirm");
 
-                    Intent confirmIntent = new Intent();
-                    Bundle confirmBundle = new Bundle();
+                        Intent confirmIntent = new Intent();
+                        Bundle confirmBundle = new Bundle();
 
-                    confirmBundle.putLong("confirmID",colID);
-                    confirmBundle.putInt("confirmPos",pos);
-                    confirmBundle.putString("confirmType",typeSpinner.getSelectedItem().toString());
-                    confirmBundle.putInt("confirmDuration",Integer.valueOf(durationEdit.getText().toString()));
-                    confirmBundle.putString("confirmComment",commentEdit.getText().toString());
-                    confirmBundle.putLong("confirmDate",longDate);
+                        confirmBundle.putLong("confirmID",colID);
+                        confirmBundle.putInt("confirmPos",pos);
+                        confirmBundle.putString("confirmType",typeSpinner.getSelectedItem().toString());
+                        confirmBundle.putInt("confirmDuration",Integer.valueOf(durationEdit.getText().toString()));
+                        confirmBundle.putString("confirmComment",commentEdit.getText().toString());
+                        confirmBundle.putLong("confirmDate",longDate);
 
-                    confirmIntent.putExtras(confirmBundle);
-                    getActivity().setResult(20, confirmIntent);
-                    getActivity().finish();
-                }
-            });
+                        confirmIntent.putExtras(confirmBundle);
+                        getActivity().setResult(20, confirmIntent);
+                        getActivity().finish();
+                    }
+                });
 
-            cancelButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.i("a_DetailFragment", "Clicked Cancel");
-                    getActivity().finish();
-                }
-            });
-            break;
+                cancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.i("a_DetailFragment", "Clicked Cancel");
+                        getActivity().finish();
+                    }
+                });
+                break;
             case "a_ActivityTrackerActivity":
                 Log.i("detail_FRAGMENT","IMA TARBLET");
                 deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -153,8 +165,12 @@ public class a_DetailFragment extends Fragment {
         }
         return v;
     }
+
+    /**
+     * initialize the spinner that contains the possible activities to choose from
+     */
     public void initializeTypeSpinner(){
-         typeSpinner = v.findViewById(R.id.a_typeSpinner);
+        typeSpinner = v.findViewById(R.id.a_typeSpinner);
         List<String> types = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.a_typeArray)));
         final  ArrayAdapter<String> typeAdapter  = new ArrayAdapter<String>(v.getContext(),android.R.layout.simple_spinner_item,types);
         typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

@@ -39,6 +39,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Author: Nick Crawford
+ */
 public class a_ActivityTrackerActivity extends AppCompatActivity {
 
     public static final DateFormat ddmmyy = new SimpleDateFormat(" HH:mm dd/MM/yyyy");
@@ -69,6 +72,7 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
      * •	The application should calculate how many minutes of activity the user does per month, and also show how much activity the user did last month.
      */
 
+
     final static ArrayList<a_TrackedActivity> activityList = new ArrayList<>();
     static ListView activityListView;
     static ActivityAdapter aa;
@@ -89,6 +93,14 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
     Toolbar a_Toolbar;
     Cursor c;
 
+    /**
+     * This method takes the bundle passed to it and uses the information in it
+     * to update the related Activity
+     *
+     * @param activityDetailsBundle a bundle passed with the position of the bundle to be updated,
+     *                              as well as the parameters to update
+     */
+
     protected static void updateActivity(Bundle activityDetailsBundle) {
         String type = activityDetailsBundle.getString("confirmType");
         String comment = activityDetailsBundle.getString("confirmComment");
@@ -100,22 +112,27 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
 
         ContentValues cv = new ContentValues();
 
-        cv.put(m_GlobalDatabaseHelper.TYPE_COL_NAME, type);
-        cv.put(m_GlobalDatabaseHelper.DURATION_COL_NAME, duration);
-        cv.put(m_GlobalDatabaseHelper.NOTE_COL_NAME, comment);
-        cv.put(m_GlobalDatabaseHelper.TIME_COL_NAME, longDate);
+        cv.put(m_GlobalDatabaseHelper.A_TYPE_COL_NAME, type);
+        cv.put(m_GlobalDatabaseHelper.A_DURATION_COL_NAME, duration);
+        cv.put(m_GlobalDatabaseHelper.A_NOTE_COL_NAME, comment);
+        cv.put(m_GlobalDatabaseHelper.A_TIME_COL_NAME, longDate);
 
-        db.update(m_GlobalDatabaseHelper.ACTIVITY_TABLE_NAME, cv, m_GlobalDatabaseHelper.WORKOUT_ID + "=" + id, null);
+        db.update(m_GlobalDatabaseHelper.A_TABLE_NAME, cv, m_GlobalDatabaseHelper.A_WORKOUT_ID + "=" + id, null);
 
         a_TrackedActivity ta = new a_TrackedActivity(1, type, duration, comment, date);
         activityList.set(pos, ta);
         aa.notifyDataSetChanged();
     }
 
+    /**
+     * used to delete the entry at position posToRemove that has the database ID IDtoDelete
+     * @param IDtoDelete the ID of the activity to remove from the database
+     * @param posToRemove the position in the array list of the activity to remove
+     */
     protected static void deleteEntry(Long IDtoDelete, int posToRemove) {
         String[] whereargs = {String.valueOf(IDtoDelete)};
         Log.i("DELETING", "Attempt to delete ID " + IDtoDelete);
-        int done = db.delete(m_GlobalDatabaseHelper.ACTIVITY_TABLE_NAME, m_GlobalDatabaseHelper.WORKOUT_ID + "=" + IDtoDelete, null);
+        int done = db.delete(m_GlobalDatabaseHelper.A_TABLE_NAME, m_GlobalDatabaseHelper.A_WORKOUT_ID + "=" + IDtoDelete, null);
         Log.i("activity tacker", "Rows affected: " + done);
         activityList.remove(posToRemove);
         aa.notifyDataSetChanged();
@@ -123,6 +140,11 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
         Snackbar.make(parentLayout.findViewById(R.id.a_addButton), R.string.a_main_snackbarText, Snackbar.LENGTH_SHORT).show();
     }
 
+    /**
+     * Called on creation of activity. assign xml obects to java objects
+     * sets up arrayList,arrayAdapter,toolbar, as well as calling Async task to read in the database
+     * @param savedInstanceState saved instance state in case of crash
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,26 +156,30 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
         pb = findViewById(R.id.a_progressBar);
         pb.setIndeterminate(true);
 
+        //set toolbar
         a_Toolbar = findViewById(R.id.a_toolbar);
         setSupportActionBar(a_Toolbar);
+        getSupportActionBar().setTitle("Physical Activity Tracker");
 
+        //create database
         dbHelper=new m_GlobalDatabaseHelper(this);
         db=dbHelper.getWritableDatabase();
 
+        //assign button values
         addButton = findViewById(R.id.a_addButton);
-         activityListView = findViewById(R.id.a_listView);
+        activityListView = findViewById(R.id.a_listView);
         statsButton=findViewById(R.id.a_main_statsButton);
 
-         aRead=new AsyncReader();
+        aRead=new AsyncReader();
         aRead.execute();
 
-         aa=new ActivityAdapter(this);
+        aa=new ActivityAdapter(this);
         activityListView.setAdapter(aa);
         setupAddButtonOnClick();
         setupStatsButtonOnClick();
 
 
-
+        //set what happens when a item in the listView is selected
         activityListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -162,8 +188,8 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
                 Bundle activityBundle=new Bundle();
 
                 Log.i("ActivityTackerActivity","COLID: "+id);
-                int idToSend =(int)id;
-                //activityToDetail.setColKey((int)id);
+                int idToSend =(int) id;
+                //set the values of the activityBundle to be the attributes of the activity selected
                 activityBundle.putInt("Position",position);
                 activityBundle.putLong("Database_id",activityToDetail.getColKey());
                 activityBundle.putString("Activity",activityToDetail.getType());
@@ -171,11 +197,11 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
                 activityBundle.putString("Comments",activityToDetail.getNotes());
                 activityBundle.putLong("Date",activityToDetail.getTimeStamp().getTime());
                 if(isPhone) {
+                    //if the orientation is portrait, send bundle to a new activity to hold the intent to display data
                     Intent detailsIntent = new Intent(a_ActivityTrackerActivity.this, a_DetailView.class);
                     detailsIntent.putExtras(activityBundle);
                     startActivityForResult(detailsIntent, 1);
-                }
-                else{
+                } else {//the user is using a landscape phone or tablet, send this data to a new frame
                     FragmentTransaction ft =getFragmentManager().beginTransaction();
                     a_DetailFragment dFrag = new a_DetailFragment();
                     dFrag.setArguments(activityBundle);
@@ -193,6 +219,11 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * on a menu item selected, go to the appropriate activity
+     * @param menuItem menuItem that was selected
+     * @return true on success
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
 
@@ -221,18 +252,23 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * on return from activity (normally the detailView activity, modify or delete the activity appropriately
+     * @param requestCode the code sent with staratActivityForResult
+     * @param responseCode the response sent from the activity
+     * @param data an intent containing the bundle that holds the data to implement
+     */
     protected void onActivityResult(int requestCode, int responseCode, Intent data){
-        if(requestCode==1){
-            if(responseCode==10){
-                Log.i("ActivityTrackerActivity","Snackbar goooooo");
+        if(requestCode == 1) {
+            if (responseCode == 10) {//on delete, call the deleteEntry function
+
                 Bundle toDeleteBundle=data.getExtras();
                 Long toDeleteID=toDeleteBundle.getLong("deleteID");
                 int toDeletePos=toDeleteBundle.getInt("deletePos");
                 Log.i("ActivityTracker","You wanted to Delete ID "+toDeleteID+" at pos "+toDeletePos);
                 deleteEntry(toDeleteID,toDeletePos);
 
-            }
-            else if(responseCode==20){
+            } else if (responseCode == 20) {//on Update, call updateActivity function
                 Bundle toConfirmBundle=data.getExtras();
                 updateActivity(toConfirmBundle);
             }
@@ -241,6 +277,9 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Creates and shows a custom help dialog
+     */
     protected void launchHelp(){
         AlertDialog.Builder builder= new AlertDialog.Builder(a_ActivityTrackerActivity.this);
         builder.setTitle(R.string.a_help_title).setMessage(R.string.a_help_content).setPositiveButton(R.string.a_ok, new DialogInterface.OnClickListener() {
@@ -251,6 +290,9 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
         }).show();
     }
 
+    /**
+     * Calculate the statistics regarding the monthly activities, and then displays that information in a dialog
+     */
     protected void setupStatsButtonOnClick(){
         statsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -260,17 +302,20 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
                 String statsMessage=getString(R.string.a_alert_statsString,avgDuration,totalDuration);
                 AlertDialog.Builder builder=new AlertDialog.Builder(a_ActivityTrackerActivity.this);
                 builder.setTitle(R.string.a_alert_title).setMessage(statsMessage)
-                .setPositiveButton(R.string.a_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                        .setPositiveButton(R.string.a_ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
-                    }
-                }).show();
+                            }
+                        }).show();
 
             }
         });
     }
 
+    /**
+     * Create and display a dialog to add a new activity
+     */
     protected void setupAddButtonOnClick(){
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -299,11 +344,11 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
                         a_TrackedActivity newAct = new a_TrackedActivity(1, newTypeSpinner.getSelectedItem().toString(), Integer.valueOf(newDurationEdit.getText().toString()), newCommentEdit.getText().toString(), new Date());
                         activityList.add(newAct);
                         ContentValues insertCV=new ContentValues();
-                        insertCV.put(m_GlobalDatabaseHelper.TYPE_COL_NAME, newAct.getType());
-                        insertCV.put(m_GlobalDatabaseHelper.DURATION_COL_NAME, newAct.getDuration());
-                        insertCV.put(m_GlobalDatabaseHelper.NOTE_COL_NAME, newAct.getNotes());
-                        insertCV.put(m_GlobalDatabaseHelper.TIME_COL_NAME, newAct.getTimeStamp().getTime());
-                        db.insert(m_GlobalDatabaseHelper.ACTIVITY_TABLE_NAME, null, insertCV);
+                        insertCV.put(m_GlobalDatabaseHelper.A_TYPE_COL_NAME, newAct.getType());
+                        insertCV.put(m_GlobalDatabaseHelper.A_DURATION_COL_NAME, newAct.getDuration());
+                        insertCV.put(m_GlobalDatabaseHelper.A_NOTE_COL_NAME, newAct.getNotes());
+                        insertCV.put(m_GlobalDatabaseHelper.A_TIME_COL_NAME, newAct.getTimeStamp().getTime());
+                        db.insert(m_GlobalDatabaseHelper.A_TABLE_NAME, null, insertCV);
 
 
                         aa.notifyDataSetChanged();
@@ -319,6 +364,10 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Initializes the spinner to display potential activities
+     * @param v the Dialog that has the spinner to be initialized
+     */
     protected void initSpinner(Dialog v){
         newTypeSpinner = v.findViewById(R.id.a_newTypeSpinner);
         List<String> types = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.a_typeArray)));
@@ -340,6 +389,10 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * callculate average for the stats button
+     * @return avg the average
+     */
     protected double calcAvgDuration(){
         int total=0;
         int count=0;
@@ -351,6 +404,10 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
         return avg;
     }
 
+    /**
+     * Calculates the total duration
+     * @return total the total
+     */
     protected double calcTotalDuration(){
         int total=0;
 
@@ -361,6 +418,9 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
         return total;
     }
 
+    /**
+     * Array adapter to display activities in an arrayList
+     */
     private class ActivityAdapter extends ArrayAdapter<a_TrackedActivity> {
         public ActivityAdapter(Context ctx) {
             super(ctx, 0);
@@ -395,14 +455,21 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Asynchronous task to read data from a database on start up
+     */
+    private class AsyncReader extends AsyncTask<String,Integer,ArrayList<a_TrackedActivity>> {
 
-    private class AsyncReader extends AsyncTask<String,Integer,ArrayList<a_TrackedActivity>>{
-
+        /**
+         * the task to do in background. In this case, read from the database
+         * @param args input arguments
+         * @return arrayList read from the database
+         */
         protected ArrayList<a_TrackedActivity> doInBackground(String ...args){
             //an array list of activities to pass back to the GUI thread
             ArrayList<a_TrackedActivity> details = new ArrayList<a_TrackedActivity>();
 
-            c = db.query(false, m_GlobalDatabaseHelper.ACTIVITY_TABLE_NAME, new String[]{m_GlobalDatabaseHelper.WORKOUT_ID, m_GlobalDatabaseHelper.TYPE_COL_NAME, m_GlobalDatabaseHelper.DURATION_COL_NAME, m_GlobalDatabaseHelper.NOTE_COL_NAME, m_GlobalDatabaseHelper.TIME_COL_NAME}, null, null, null, null, null, null);
+            c = db.query(false, m_GlobalDatabaseHelper.A_TABLE_NAME, new String[]{m_GlobalDatabaseHelper.A_WORKOUT_ID, m_GlobalDatabaseHelper.A_TYPE_COL_NAME, m_GlobalDatabaseHelper.A_DURATION_COL_NAME, m_GlobalDatabaseHelper.A_NOTE_COL_NAME, m_GlobalDatabaseHelper.A_TIME_COL_NAME}, null, null, null, null, null, null);
 
             double totalRecords = c.getCount();
             double count=0;
@@ -410,21 +477,20 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
             c.moveToFirst();
             while(!c.isAfterLast()){
                 try{
-                //grab all the data, put into new objects, save to list
-                    int toBeCol = c.getInt(c.getColumnIndex(m_GlobalDatabaseHelper.WORKOUT_ID));
-                    String toBeType = c.getString(c.getColumnIndex(m_GlobalDatabaseHelper.TYPE_COL_NAME));
-                    int toBeDuration = c.getInt(c.getColumnIndex(m_GlobalDatabaseHelper.DURATION_COL_NAME));
-                    String toBeComments = c.getString(c.getColumnIndex(m_GlobalDatabaseHelper.NOTE_COL_NAME));
-                    Long toBeLongDate = c.getLong(c.getColumnIndex(m_GlobalDatabaseHelper.TIME_COL_NAME));
-                Date toBeDate=new Date(toBeLongDate);
-                a_TrackedActivity newActivity = new a_TrackedActivity(toBeCol,toBeType,toBeDuration,toBeComments,toBeDate);
-                details.add(newActivity);
+                    //grab all the data, put into new objects, save to list
+                    int toBeCol = c.getInt(c.getColumnIndex(m_GlobalDatabaseHelper.A_WORKOUT_ID));
+                    String toBeType = c.getString(c.getColumnIndex(m_GlobalDatabaseHelper.A_TYPE_COL_NAME));
+                    int toBeDuration = c.getInt(c.getColumnIndex(m_GlobalDatabaseHelper.A_DURATION_COL_NAME));
+                    String toBeComments = c.getString(c.getColumnIndex(m_GlobalDatabaseHelper.A_NOTE_COL_NAME));
+                    Long toBeLongDate = c.getLong(c.getColumnIndex(m_GlobalDatabaseHelper.A_TIME_COL_NAME));
+                    Date toBeDate=new Date(toBeLongDate);
+                    a_TrackedActivity newActivity = new a_TrackedActivity(toBeCol,toBeType,toBeDuration,toBeComments,toBeDate);
+                    details.add(newActivity);
 
-                Integer pbProgress =(int)Math.round((++count/totalRecords)*100);
-                publishProgress(pbProgress);
-                Thread.sleep(100);
-                c.moveToNext();}
-                catch(InterruptedException e){e.printStackTrace();}
+                    Integer pbProgress =(int)Math.round((++count/totalRecords)*100);
+                    publishProgress(pbProgress);
+                    Thread.sleep(100);
+                    c.moveToNext();} catch(InterruptedException e){e.printStackTrace();}
             }
             c.close();
 
@@ -432,10 +498,19 @@ public class a_ActivityTrackerActivity extends AppCompatActivity {
             return details;
         }
 
+        /**
+         * To be called on publishProgress
+         * @param values array of input integers to update the progress bar
+         */
         protected void onProgressUpdate(Integer ...values){
             super.onProgressUpdate(values);
             pb.setProgress(values[0]);
         }
+
+        /**
+         * After the task is finished, hide progress bar and update activityList
+         * @param result arrayList to use to set the global activityList
+         */
         protected void onPostExecute(ArrayList<a_TrackedActivity> result){
             activityList.clear();
             for(a_TrackedActivity ta:result){

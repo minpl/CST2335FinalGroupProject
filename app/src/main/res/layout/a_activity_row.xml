@@ -9,18 +9,21 @@
         android:id="@+id/a_TypeText"
         android:layout_width="match_parent"
         android:layout_height="32dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:textAppearance="@android:style/TextAppearance.Material.Large" />
 
     <TextView
         android:id="@+id/a_DurationText"
         android:layout_width="match_parent"
         android:layout_height="32dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:textAppearance="@android:style/TextAppearance.Material.Large" />
 
     <TextView
         android:id="@+id/a_DateText"
         android:layout_width="match_parent"
         android:layout_height="32dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:textAppearance="@android:style/TextAppearance.Material.Large" />
 
 </LinearLayout>

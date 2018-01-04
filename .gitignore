@@ -8,6 +8,3 @@
 /captures
 .externalNativeBuild
 .idea/vcs.xml
-.idea/vcs.xml
-app/build.gradle
-app/src/main/res/values/strings.xml

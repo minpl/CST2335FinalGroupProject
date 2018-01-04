@@ -31,9 +31,9 @@
             android:clickable="true">
 
             <ImageView
-                android:src="@drawable/icons8_minus_50"
+                style="@style/c_ActionIcon"
                 android:layout_centerInParent="true"
-                style="@style/c_ActionIcon" />
+                android:src="@drawable/c_icons8_minus_50" />
 
         </RelativeLayout>
 

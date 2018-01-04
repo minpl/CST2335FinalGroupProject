@@ -3,9 +3,8 @@ package com.example.joe.cst2335finalgroupproject;
 import java.util.Date;
 
 /**
- * Created by Nick
+ * Author: Nick Crawford
  */
-
 public class a_TrackedActivity {
 
     String notes;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <!--region APP-WIDE/TOOLBAR STRINGS-->
     //app-wide strings
     <string name="m_app_name">CST2335 Projet final</string>
     <string name="m_toolbar_guide">Guide de la barre d\'outils:</string>
@@ -9,8 +9,9 @@
     <string name="m_menu_food">Suivi de la nutrition</string>
     <string name="m_menu_thermostat">Thermostat de maison</string>
     <string name="m_menu_automobile">Voiture</string>
+    <!--endregion-->
 
-    //launcher activity strings
+    <!--region MAIN/LAUNCHER ACTIVITY STRINGS-->
     <string name="m_activityTrackerButtonText">Lancer l\'activité Tracker</string>
     <string name="m_activityTrackerDescriptionText">Entrez et suivez vos entraînements, y compris la durée.</string>
 
@@ -22,14 +23,14 @@
 
     <string name="m_carTrackerButtonText">Lancer le carburant de voiture Tracker</string>
     <string name="m_carTrackerDescriptionText">Enregistrez les achats d\'essence et consultez les informations récapitulatives et les tendances.</string>
+    <!--endregion-->
 
-    //car activity strings
+    <!--region CAR/FUEL TRACKER ACTIVITY STRINGS-->
 
     <string name="c_CarTrackerActivity">Activité de suivi de voiture</string>
     <string name="c_LblLoading">Chargement</string>
     <string name="c_changesSaved">Changements sauvegardés avec succès</string>
     <string name="c_detailsAdded">Entrée ajoutée avec succès</string>
-
 
     <string name="c_Ok">D\'accord</string>
     <string name="c_Cancel">Annuler</string>
@@ -64,13 +65,11 @@
     <string name="c_AlertDeleteDetailsMsg">Êtes-vous sûr de vouloir supprimer cette entrée?</string>
     <string name="c_DeleteSuccessful">Entrée supprimée avec succès</string>
 
-
     <string name="c_lastMonthStats">Statistiques du mois dernier</string>
     <string name="c_PriceLastMonth">Prix ​​moyen du gaz:</string>
     <string name="c_PurchasedLastMonth">Gaz total acheté:</string>
     <string name="c_avgGasPurchHist">Historique d\'achat de gaz</string>
     <string name="c_avgGasPurchHistNone">Vous n\'avez actuellement aucun historique d\'achat de gaz</string>
-
 
     <string-array name="c_months">
         <item>Janvier</item>
@@ -101,6 +100,10 @@
         \t\u2022 Appuyez sur le bouton «Afficher les statistiques d'achat de carburant»\n\t tpour afficher les statistiques sur les carburants passés\n
         \t\u2022 Rentrez chez vous en appuyant sur le bouton «Accueil»
     </string>
+    <!--endregion-->
+
+    <!--region THERMOSTAT RULE ACTIVITY STRINGS-->
+    <!-- for thermostat activity layouts -->
     <string name="t_addButtonText">Ajouter une nouvelle règle à la liste</string>
     <string name="t_ruleText">test</string>
     <string name="t_helpMenuTitleText">Menu d\'aide du gestionnaire du thermostat</string>
@@ -114,22 +117,78 @@
         \t\u2022 Ajouter Règle:\t Tap \'Add Rule\' button\n
         \t\u2022 Rentrez chez vous en appuyant sur le bouton «Accueil»
     </string>
-    <string name="t_helpDoneButtonText">terminé</string>
+    <string name="t_helpDoneButtonText">Terminé</string>
+
+    <!-- for landscape thermostat activity -->
     <string name="t_frameLayoutPlaceholderText">Les détails de la règle seront affichés ici.\n\n
                                                 Cliquez sur Ajouter ou sélectionnez une ligne dans la liste sur la gauche.</string>
+    <!-- Strings shared by Thermostat Add and Edit dialogs -->
     <string name="t_dayLabel">Sur:</string>
     <string name="t_timeLabel">À:</string>
     <string name="t_separatorLabel">:</string>
-    <string name="t_setTempLabel">Réglez la température sur</string>
+    <string name="t_setTempLabel">Réglez la température À: </string>
     <string name="t_degreesLabel">°C</string>
     <string name="t_manualEntryLabelText">Ou tapez la règle manuellement:</string>
     <string name="t_manualEntryHintText">Lundi 6:00 Temp -> 20</string>
     <string name="t_manualEntryFormatLabelText">Suivez le format: lundi 6:00 Temp -> 20</string>
+    <string-array name="t_daysArray">
+        <item>Dimanche</item>
+        <item>Lundi</item>
+        <item>Mardi</item>
+        <item>Mercredi</item>
+        <item>Jeudi</item>
+        <item>Vendredi</item>
+        <item>Samedi</item>
+    </string-array>
+
+    <!-- for edit dialog -->
     <string name="t_saveEditChangesButtonText">Sauvegarder</string>
     <string name="t_discardEditChangesButtonText">Jeter</string>
     <string name="t_saveNewRuleEditChangesButtonText">Enregistrer comme nouveau</string>
+
+    <!-- for add dialog -->
     <string name="t_saveAddRuleButtonText">Sauvegarder</string>
     <string name="t_discardAddRuleButtonText">Jeter</string>
+    <string name="thermostatIcon">thermostatIcon</string>
+    <!--endregion-->
 
+    <!--region NUTRITION TRACKER ACTIVITY STRINGS-->
+    <string name="n_ValidateDialogTitle">Veuillez réessayer.</string>
+    <string name="n_ValidateDialogMessage">Vous devez entrer un nom ou une description d\'aliment.</string>
+    <string name="n_OK">OK</string>
+    <string name="n_EditToastMessage">L\'article alimentaire a été modifié.</string>
+    <string name="n_AboutTitle">Nutrition Tracker</string>
+    <string name="n_AboutMessage">Menu principal: Retour à la page d\'accueil, rotation des activités, À propos de \nDomaine de menu: Ajouter un élément, éléments de commande, statistiques \n\nVersion 1.0 par Neil Gagné</string>
+    <string name="n_FoodAddedToast">Un aliment a été ajouté</string>
+    <string name="n_FoodNameOrDesc">Nom de l\'aliment ou description:</string>
+    <string name="n_Calories">Calories:</string>
+    <string name="n_Carbs">Les glucides:</string>
+    <string name="n_Fat">Graisse:</string>
+    <string name="n_Comments">Commentaires:</string>
+    <string name="n_Edit">MODIFIER</string>
+    <string name="n_Close">FERMER</string>
+    <string name="n_LogFood">Bûche</string>
+    <string name="n_Cancel">Annuler</string>
+    <string name="n_Delete">Effacer</string>
 
+    <string name="n_NoFood">Aucun aliment n\'a été enregistré aujourd\'hui.</string>
+    <string name="n_StatsTitle">Statistiques quotidiennes sur la nutrition</string>
+    <!--endregion-->
+
+    <!--region ACTIVITY TRACKER ACTIVITY STRINGS-->
+    <string name="a_main_toastText">" Activité ajoutée avec succès"</string>
+    <string name="a_main_snackbarText">Message supprimé</string>
+    <string name="a_main_addButton">Ajouter</string>
+    <string name="a_details_cancelButton">Annuler</string>
+    <string name="a_details_deleteButton">Effacer</string>
+    <string name="a_details_confirmButton">Confirmer</string>
+    <string name="a_details_Comments">"Commentaires: "</string>
+    <string name="a_details_Duration">Durée</string>
+    <string name="a_details_activityType">Activité</string>
+    <string name="a_main_statsButton">Statistiques mensuelles</string>
+    <string name="a_alert_statsString">Activité mensuelle moyenne: %1$f Total ce mois-ci: %2$f</string>
+    <string name="a_alert_title">Statistiques</string>
+    <string name="a_help_title">Aide a l\'activité</string>
+    <string name="a_ok">OK</string>
+    <!--endregion-->
 </resources>

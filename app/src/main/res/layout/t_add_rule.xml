@@ -132,7 +132,7 @@
 
     <Button
         android:id="@+id/t_discardAddRuleButton"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
@@ -144,7 +144,7 @@
 
     <Button
         android:id="@+id/t_saveAddRuleButton"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="16dp"

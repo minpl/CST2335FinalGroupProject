@@ -4,50 +4,50 @@
     android:id="@+id/fuelDetailsParent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     tools:context="com.example.joe.cst2335finalgroupproject.c_CarTrackerActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/c_Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
 
     <FrameLayout
         android:id="@+id/flFuelDetailsSummaryPane"
         android:layout_width="590dp"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/c_Toolbar">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/c_Toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?attr/colorPrimary"
-                android:minHeight="?attr/actionBarSize"
-                android:theme="?attr/actionBarTheme" />
-
             <LinearLayout
                 android:id="@+id/btnAddPurchase"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                android:gravity="center_vertical"
                 android:layout_alignParentEnd="true"
-                android:layout_below="@id/c_Toolbar"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/c_custom_button"
                 android:clickable="true"
-                android:background="@drawable/c_custom_button">
+                android:gravity="center_vertical">
 
                 <TextView
-                    android:text="@string/c_BtnAddPurchase"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
+                    android:text="@string/c_BtnAddPurchase"
                     android:textSize="17sp"/>
 
                 <ImageView
-                    android:src="@drawable/icons8_plus_50"
-                    style="@style/c_ActionIcon"/>
+                    style="@style/c_ActionIcon"
+                    android:src="@drawable/c_icons8_plus_50" />
 
             </LinearLayout>
 
@@ -55,23 +55,23 @@
                 android:id="@+id/btnViewFuelStats"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="20dp"
-                android:gravity="center_vertical"
                 android:layout_alignParentBottom="true"
                 android:layout_centerInParent="true"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/c_custom_button"
                 android:clickable="true"
-                android:background="@drawable/c_custom_button">
+                android:gravity="center_vertical">
 
                 <ImageView
-                    android:src="@drawable/icons8_futures_50"
-                    style="@style/c_ActionIcon" />
+                    style="@style/c_ActionIcon"
+                    android:src="@drawable/c_icons8_futures_50" />
 
                 <TextView
-                    android:text="@string/c_BtnViewFuelStats"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
+                    android:text="@string/c_BtnViewFuelStats"
                     android:textSize="17sp" />
 
             </LinearLayout>
@@ -84,24 +84,23 @@
                 android:columnCount="5"
                 android:rowCount="1">
 
-                <TableRow
-                    style="@style/c_HeadingBlue">
+                <TableRow style="@style/c_HeadingBlue">
 
                     <TextView
-                        android:text="@string/c_LblPriceHeading"
-                        style="@style/c_PriceCell"/>
+                        style="@style/c_PriceCell"
+                        android:text="@string/c_LblPriceHeading" />
 
                     <TextView
-                        android:text="@string/c_LblLitresHeading"
-                        style="@style/c_LitresCell" />
+                        style="@style/c_LitresCell"
+                        android:text="@string/c_LblLitresHeading" />
 
                     <TextView
-                        android:text="@string/c_LblKilometersHeading"
-                        style="@style/c_KilometersCell" />
+                        style="@style/c_KilometersCell"
+                        android:text="@string/c_LblKilometersHeading" />
 
                     <TextView
-                        android:text="@string/c_LblDateHeading"
-                        style="@style/c_DateCell" />
+                        style="@style/c_DateCell"
+                        android:text="@string/c_LblDateHeading" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -113,12 +112,12 @@
 
             <GridLayout
                 android:id="@+id/glLoading"
-                android:layout_marginTop="50dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/glFuelSummaryHead"
+                android:layout_marginTop="50dp"
                 android:columnCount="3"
                 android:rowCount="1"
-                android:layout_below="@id/glFuelSummaryHead"
                 android:visibility="invisible">
 
                 <TextView
@@ -131,11 +130,11 @@
 
                 <ProgressBar
                     android:id="@+id/pbLoadFuelDetails"
+                    style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
-                    android:layout_gravity="fill"
-                    style="?android:attr/progressBarStyleHorizontal"/>
+                    android:layout_gravity="fill" />
 
                 <TextView
                     android:id="@+id/tvLoadingPercentage"
@@ -161,11 +160,11 @@
 
     <FrameLayout
         android:id="@+id/flEnterFuelDetailsHolder"
-        android:layout_toRightOf="@id/flFuelDetailsSummaryPane"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginLeft="50dp"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@id/flFuelDetailsSummaryPane">
     </FrameLayout>
 
 </RelativeLayout>

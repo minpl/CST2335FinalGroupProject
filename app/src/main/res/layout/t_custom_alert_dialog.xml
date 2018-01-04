@@ -7,16 +7,17 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorAccent"
+        android:background="@color/c_headingBlue"
         android:padding="5dp">
 
         <ImageView
-            android:id="@+id/thermostatIcon"
+            android:id="@+id/t_thermostatIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:contentDescription="@string/thermostatIcon"
             android:src="@drawable/icons8_temperature_inside_50" />
 
         <TextView
@@ -24,14 +25,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_marginLeft="20dp"
-            android:layout_toRightOf="@id/thermostatIcon"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@id/t_thermostatIcon"
             android:text="@string/t_helpMenuTitleText"
             android:textSize="20sp" />
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/tvCarAlertMsg"
+        android:id="@+id/t_helpMenuTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="25dp"

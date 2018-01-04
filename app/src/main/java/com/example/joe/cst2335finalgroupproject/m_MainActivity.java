@@ -9,8 +9,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+/**
+ * This Class serves as the Launcher/Home Screen of the App.
+ */
 public class m_MainActivity extends AppCompatActivity {
 
+    /**
+     * Inflates the main view and the Toolbar, and sets the behaviors of the
+     * Buttons in the main portion of the screen.
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +31,9 @@ public class m_MainActivity extends AppCompatActivity {
         setButtonListeners();
     }
 
+    /**
+     * Sets each button to launch its corresponding Activity.
+     */
     private void setButtonListeners() {
 
         ImageView activityButton = findViewById(R.id.m_ivActivity);
@@ -57,12 +69,25 @@ public class m_MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Inflates the Toolbar Menu.
+     *
+     * @param menu The Menu to be inflated.
+     * @return Boolean true reflecting a successful inflation.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.m_menu, menu);
         return true;
     }
 
+    /**
+     * Sets the behavior of an OnClick event in the Toolbar.
+     *
+     * @param menuItem The MenuItem that was clicked.
+     *
+     * @return boolean true (dummy value).
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
 

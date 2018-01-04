@@ -16,19 +16,23 @@
         <activity android:name=".m_MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".a_ActivityTrackerActivity" />
-        <activity android:name=".t_ThermostatProgramActivity" />
+        <activity
+            android:name=".t_ThermostatProgramActivity"
+            android:configChanges="keyboardHidden|orientation" />
         <activity android:name=".c_CarTrackerActivity" android:configChanges="keyboardHidden|orientation" />
         <activity android:name=".a_DetailView" />
         <activity android:name=".t_DetailView" />
         <activity android:name=".c_AddFuelDetailsActivity" />
         <activity android:name=".c_EditFuelDetailsActivity" />
-        <activity android:name=".n_NutritionTrackerActivity" />
+        <activity
+            android:name=".n_NutritionTrackerActivity"
+            android:configChanges="orientation" />
         <activity android:name=".c_FuelStatisticsActivity"></activity>
+        <activity android:name=".n_NutritionDetail" />
     </application>
 
 </manifest>

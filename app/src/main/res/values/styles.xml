@@ -1,14 +1,15 @@
 <resources>
 
-    <!-- Base application theme. -->
+    <!--region Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <!--endregion-->
 
-    <!-- Car Activity -->
+    <!--region Car Activity -->
     <style name="c_DetailsEditText">
         <item name="android:textSize">17sp</item>
     </style>
@@ -34,8 +35,7 @@
         <item name="android:layout_height">25dp</item>
     </style>
 
-    <!-- Table styles -->
-
+    <!--region Table styles -->
     <style name="c_HeadingBlue">
         <item name="android:background">@color/c_headingBlue</item>
         <item name="android:paddingTop">5dp</item>
@@ -47,6 +47,7 @@
         <item name="android:textSize">17sp</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
+
     <style name="c_PriceCell" parent="c_HeadingCell">
         <item name="android:layout_width">105dp</item>
         <item name="android:padding">7dp</item>
@@ -63,8 +64,9 @@
     <style name="c_DateCell" parent="c_HeadingCell">
         <item name="android:layout_width">160dp</item>
     </style>
+    <!--endregion-->
 
-    <!-- Fuel Statistics -->
+    <!--region Fuel Statistics -->
     <style name="c_StatCell">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_columnWeight">1</item>
@@ -81,5 +83,7 @@
     <style name="c_StatData" parent="c_StatCell">
         <item name="android:layout_width">200dp</item>
     </style>
+    <!--endregion-->
+    <!--endregion-->
 
 </resources>

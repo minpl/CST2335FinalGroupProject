@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <!-- car activity colors -->
     <color name="c_headingBlue">#607D8B</color>
     <color name="c_rowBlue">#CFD8DC</color>
     <color name="c_rowWhite">#ECEFF1</color>

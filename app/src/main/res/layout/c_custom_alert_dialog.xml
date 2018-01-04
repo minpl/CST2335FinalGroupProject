@@ -12,21 +12,21 @@
         android:padding="5dp">
 
         <ImageView
-            android:id="@+id/thermostatIcon"
+            android:id="@+id/tvCarAlertImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="10dp"
-            android:src="@drawable/icons8_gas_station_50_color" />
+            android:src="@drawable/c_icons8_gas_station_50_color" />
 
         <TextView
-            android:id="@+id/t_helpMenuTitle"
+            android:id="@+id/tvCarAlertTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_marginLeft="20dp"
-            android:layout_toRightOf="@id/thermostatIcon"
+            android:layout_toRightOf="@id/tvCarAlertImage"
             android:text="@string/c_CarTrackerActivity"
             android:textSize="20sp" />
     </RelativeLayout>
